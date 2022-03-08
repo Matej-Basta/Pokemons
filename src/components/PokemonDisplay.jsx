@@ -1,15 +1,19 @@
 import React, {useState, useEffect} from "react";
+import {Pokemon} from "./Pokemon.jsx";
 
 export function PokemonDisplay() {
 
-    const [data, setData] = useState(null);
+    const [pokemons, setPokemons] = useState(null);
     const [dataLoaded, setDataLoaded] = useState(false);
+    const [offset, setOffset] = useState(0);
 
     const loadData = async () => {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?offset=0&limit=5");
+        const response = await fetch("https://pokeapi.co/api/v2/pokemon?offset=" + offset + "&limit=5");
         const data = await response.json();
 
-        console.log(data);
+        data && setPokemons(data.results);
+        setDataLoaded(true);
+        console.log(offset);
     }
 
     useEffect(() => {
@@ -17,8 +21,15 @@ export function PokemonDisplay() {
     }, []);
 
     return (
-        <>
-            <p>sth</p>
+        <>  
+            <button onClick={() => {setOffset(Math.floor(Math.random() * 101)); loadData()}}>Random pokemons</button>
+            {!dataLoaded ? 
+            <p>Loading</p> :
+            pokemons.map((pokemon, index) => {
+                return <Pokemon key={index} pokemon={pokemon} />
+            })
+            }
+            
         </>
     );
 }
